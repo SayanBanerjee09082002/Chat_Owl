@@ -1,6 +1,7 @@
 import 'package:chatapp/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'chat.dart';
 
 class Search extends StatefulWidget {
   _Search createState() => _Search();
@@ -30,9 +31,35 @@ class _Search extends State<Search> {
     }
   }
 
+  getChatRoomId(String a, String b) {
+    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+      return "$b\_$a";
+    } else {
+      return "$a\_$b";
+    }
+  }
+
+  sendMessage(String userName){
+    List<String> users = [userName, Constants.myName];
+
+    String chatRoomId = getChatRoomId(userName, Constants.myName,);
+
+    Map<String, dynamic>  chatRoomMap = {
+      "users": users,
+      "chatRoomId" : chatRoomId,
+    } ;
+
+    databaseMethods.addChatRoom(chatRoomMap, chatRoomId);
+
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => Chat(
+          chatRoomId: chatRoomId,
+        )
+    ));
+  }
+
   Widget UserList() {
-    return Container(
-      height: 500,
+    return Expanded(
       child: isLoading
           ? Container(
               child: Center(
@@ -71,12 +98,12 @@ class _Search extends State<Search> {
           Spacer(),
           GestureDetector(
             onTap: () {
-              null;
+              sendMessage(userName!);
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                  color: Colors.redAccent,
+                  color: Colors.orange,
                   borderRadius: BorderRadius.circular(24)),
               child: Text(
                 "Message",
@@ -87,6 +114,11 @@ class _Search extends State<Search> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -147,7 +179,6 @@ class _Search extends State<Search> {
                         child: GestureDetector(
                           onTap: () {
                             InitiateSearch();
-                            print('tap');
                           },
                           child: Icon(
                             Icons.search,
