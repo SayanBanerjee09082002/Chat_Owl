@@ -1,3 +1,4 @@
+import 'package:chatapp/pages/create_grp.dart';
 import 'package:chatapp/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +74,10 @@ class _ChatRoomState extends State<ChatRoom> {
                       value: 0,
                       child: Text('Log Out'),
                     ),
-                    PopupMenuItem<int>(value: 1, child: Text('Create Group'))
+                    PopupMenuItem<int>(
+                      value: 1,
+                      child: Text('Create Group'),
+                    )
                   ])
         ],
       ),
@@ -98,6 +102,9 @@ class _ChatRoomState extends State<ChatRoom> {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => Authenticate()));
         break;
+      case 1:
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Create_Group()));
     }
   }
 }

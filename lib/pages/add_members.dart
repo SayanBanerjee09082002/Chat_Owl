@@ -1,17 +1,17 @@
-import 'package:chatapp/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'chat.dart';
+import '../services/database.dart';
 
-class Search extends StatefulWidget {
-  _Search createState() => _Search();
+class Add_Members extends StatefulWidget{
+  _Add_Members createState() => _Add_Members();
 }
 
-class _Search extends State<Search> {
+class _Add_Members extends State<Add_Members>{
   QuerySnapshot<Map<String, dynamic>>? searchResultSnapshot;
   QuerySnapshot<Map<String, dynamic>>? Snapshot;
   bool isLoading = false;
   bool haveUserSearched = false;
+  bool isChecked = false;
   DatabaseMethods databaseMethods = new DatabaseMethods();
   var searchEditingController = TextEditingController();
 
@@ -47,62 +47,31 @@ class _Search extends State<Search> {
     }
   }
 
-  getChatRoomId(String a, String b) {
-    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
-      return "$b\_$a";
-    } else {
-      return "$a\_$b";
-    }
-  }
-
-  sendMessage(String userName) {
-    List<String> users = [userName, Constants.myName];
-
-    String chatRoomId = getChatRoomId(
-      userName,
-      Constants.myName,
-    );
-
-    Map<String, dynamic> chatRoomMap = {
-      "users": users,
-      "chatRoomId": chatRoomId,
-    };
-
-    databaseMethods.addChatRoom(chatRoomMap, chatRoomId);
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => Chat(
-                  chatRoomId: chatRoomId,
-                )));
-  }
-
   Widget UserList() {
     return Expanded(
       child: isLoading
           ? Container(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      )
           : haveUserSearched
-              ? ListView.builder(
-                  itemCount: searchResultSnapshot?.docs.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      searchResultSnapshot?.docs[index].data()["userName"],
-                      searchResultSnapshot?.docs[index].data()["userEmail"],
-                    );
-                  })
-              : ListView.builder(
-                  itemCount: Snapshot?.docs.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      Snapshot?.docs[index].data()["userName"],
-                      Snapshot?.docs[index].data()["userEmail"],
-                    );
-                  }),
+          ? ListView.builder(
+          itemCount: searchResultSnapshot?.docs.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              searchResultSnapshot?.docs[index].data()["userName"],
+              searchResultSnapshot?.docs[index].data()["userEmail"],
+            );
+          })
+          : ListView.builder(
+          itemCount: Snapshot?.docs.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              Snapshot?.docs[index].data()["userName"],
+              Snapshot?.docs[index].data()["userEmail"],
+            );
+          }),
     );
   }
 
@@ -125,21 +94,7 @@ class _Search extends State<Search> {
             ],
           ),
           Spacer(),
-          GestureDetector(
-            onTap: () {
-              sendMessage(userName!);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.circular(24)),
-              child: Text(
-                "Message",
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
-          )
+          Checkbox(value: isChecked, onChanged: null)
         ],
       ),
     );
@@ -194,7 +149,7 @@ class _Search extends State<Search> {
                 margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 0, horizontal: 10.0),
+                  const EdgeInsets.symmetric(vertical: 0, horizontal: 10.0),
                   child: TextFormField(
                     style: TextStyle(color: Colors.black),
                     controller: searchEditingController,

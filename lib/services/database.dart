@@ -2,15 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseMethods {
   GetUserByUsername(String username) async {
-    return await
-    FirebaseFirestore.instance
+    return await FirebaseFirestore.instance
         .collection('users')
         .where('userName', isEqualTo: username)
         .get();
   }
 
+  GetUsers() async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .where('userName')
+        .get();
+  }
+
   Future<void> UploadUserInfo(userData) async {
-    FirebaseFirestore.instance.collection("users").add(userData).catchError((e) {
+    FirebaseFirestore.instance
+        .collection("users")
+        .add(userData)
+        .catchError((e) {
       print(e.toString());
     });
   }
@@ -35,7 +44,7 @@ class DatabaseMethods {
     });
   }
 
-  getChats(String chatRoomId, messageMap) async{
+  getChats(String chatRoomId, messageMap) async {
     return FirebaseFirestore.instance
         .collection("chatRoom")
         .doc(chatRoomId)
@@ -44,20 +53,31 @@ class DatabaseMethods {
         .snapshots();
   }
 
-
-  Future<void>? addMessage(String chatRoomId, chatMessageData){
-    FirebaseFirestore.instance.collection("chatRoom")
+  Future<void>? addMessage(String chatRoomId, chatMessageData) {
+    FirebaseFirestore.instance
+        .collection("chatRoom")
         .doc(chatRoomId)
         .collection("chats")
-        .add(chatMessageData).catchError((e){
+        .add(chatMessageData)
+        .catchError((e) {
       print(e.toString());
     });
   }
 
   getUserChats(String itIsMyName) async {
-    return  await FirebaseFirestore.instance
+    return await FirebaseFirestore.instance
         .collection("chatRoom")
         .where('users', arrayContains: itIsMyName)
         .snapshots();
+  }
+
+  Future<void> addGroup(groupMap, groupRoomId) {
+    return FirebaseFirestore.instance
+        .collection("groups")
+        .doc(groupRoomId)
+        .set(groupMap)
+        .catchError((e) {
+      print(e);
+    });
   }
 }
